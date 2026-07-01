@@ -1,0 +1,1 @@
+mongoose.connect(process.env.MONGO_DB).then( () => console.log("Connected to database!")).catch(err => console.log('MongoDb error'));
