@@ -1,6 +1,6 @@
-const user = require('../models/userModels');
+const {User} = require('../models/userModels'); 
 
-function authController(req, res){
+async function signUp(req, res){
     const body = req.body;
 
     if(!body.email) return res.status(400).json({
@@ -23,11 +23,20 @@ function authController(req, res){
         "message": "Enter a password of atleast length 6",
         "success": false,
     });
-    return res.status(200).json({
+
+    await User.create({
+        email: req.body.email,
+        password: req.body.password,
+        categories: req.body.categories,
+    });
+
+    return res.status(201).json({
         // "message": "Successful",
-        "message": req.body,
+        "message": "A new user is created successfully",
         "success": true,
     });
 }
 
-module.exports = {authController};
+module.exports = {
+    signUp,
+};

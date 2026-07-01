@@ -1,5 +1,6 @@
 // Importing modules
 require('dotenv').config();
+require('./config/db'); 
 const express = require('express');
 const router = require('./routes/auth/user');
 
