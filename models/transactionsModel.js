@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
 const transactionSchema = new mongoose.Schema({
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        required: true,
+    },
     expenditureCategory:{
         type: String,
         required: true,

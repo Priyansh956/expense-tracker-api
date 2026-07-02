@@ -27,6 +27,7 @@ async function addExpense(req, res){
         });
     
         const new_transaction = await transaction.create({
+            userId: req.user._id,
             expenditureCategory,
             amount,
             category,
@@ -36,7 +37,7 @@ async function addExpense(req, res){
     
         return res.status(201).json({
             "message": "Transaction logged successfully",
-            // "data": new_transaction,
+            "data": new_transaction,
             "success": true,
         });
     }
@@ -53,13 +54,15 @@ async function editExpense(req, res){
     try{
         const {expenditureCategory, amount, category, date, note} = req.body;
 
-        const new_transaction = await transaction.create({
-            expenditureCategory,
-            amount,
-            category,
-            date,
-            note,
-        });
+        const updated_transaction = await transaction.findOneAndUpdate(
+            { _id: id, userId: req.user._id },
+            { expenditureCategory, amount, category, date, note },
+            { new: true, runValidators: true }
+        );
+
+        if (!updated_transaction) {
+            return res.status(404).json({ message: "Transaction not found", success: false });
+        }
     
         return res.status(200).json({
             "message": "Transaction updated successfully",
@@ -79,7 +82,7 @@ async function editExpense(req, res){
 async function deleteExpense(req, res){
     try{
         const {id} = req.params;
-        const deletedTransaction = await transaction.findByIdAndDelete(id);
+        const deletedTransaction = await transaction.findByIdAndDelete({ _id: id, userId: req.user._id});
     
         return res.status(200).json({
             "message": "Transaction delete successfully",

@@ -14,7 +14,7 @@ const restrictToLoggedInUsersOnly = async (req, res, next) => {
         next();
     }
     catch(err){
-        return res.status(401).json(`Error`);
+        return res.status(401).json("Error");
     }
 }
 
