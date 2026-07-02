@@ -2,7 +2,8 @@
 require('dotenv').config();
 require('./config/db'); 
 const express = require('express');
-const router = require('./routes/auth/user');
+const authRouter = require('./routes/auth/user');
+const transactionRouter = require('./routes/transactions/transactions');
 
 const app = express();
 
@@ -14,7 +15,7 @@ app.use(express.urlencoded({extended: false}));
 app.use(express.json());
 
 // Mounting user router
-app.use('/auth', router);
-
+app.use('/auth', authRouter);
+app.use('/', transactionRouter);
 
 app.listen(process.env.PORT, () => {console.log(`Served successfully started at PORT number: ${process.env.PORT}`)});
