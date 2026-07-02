@@ -1,7 +1,7 @@
 const bcrypt = require('bcrypt');
 
-const {User} = require('../models/userModels'); 
-const {setUser} = require('../services/auth');
+const {User} = require('../models/userModel'); 
+const {setUser} = require('../services/jwtService');
 
 async function signUp(req, res){
     const body = req.body;
@@ -94,7 +94,7 @@ async function userLogin(req, res){
         "message": "User found",
         "success": true,
         token,
-    })
+    });
 }
 
 module.exports = {

@@ -7,7 +7,8 @@ function setUser(user){
         _id: user._id,
         email: user.email,
     },
-    secret,
+        secret,
+        {expiresIn: '7d'},
     );
 }
 
