@@ -16,6 +16,6 @@ app.use(express.json());
 
 // Mounting user router
 app.use('/auth', authRouter);
-app.use('/', transactionRouter);
+app.use('/transactions', transactionRouter);
 
 app.listen(process.env.PORT, () => {console.log(`Served successfully started at PORT number: ${process.env.PORT}`)});

@@ -19,5 +19,5 @@ const restrictToLoggedInUsersOnly = async (req, res, next) => {
 }
 
 module.exports = {
-    restrictToLoggedInUsersOnly
+    restrictToLoggedInUsersOnly,
 };

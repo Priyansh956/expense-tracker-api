@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const {transaction} = require('../models/transactionsModel');
 
 // Add expense
@@ -52,6 +51,7 @@ async function addExpense(req, res){
 // Edit expense
 async function editExpense(req, res){
     try{
+        const {id} = req.params;
         const {expenditureCategory, amount, category, date, note} = req.body;
 
         const updated_transaction = await transaction.findOneAndUpdate(
@@ -66,7 +66,7 @@ async function editExpense(req, res){
     
         return res.status(200).json({
             "message": "Transaction updated successfully",
-            "data": new_transaction,
+            "data": updated_transaction,
             "success": true,
         });
     }
@@ -82,7 +82,7 @@ async function editExpense(req, res){
 async function deleteExpense(req, res){
     try{
         const {id} = req.params;
-        const deletedTransaction = await transaction.findByIdAndDelete({ _id: id, userId: req.user._id});
+        const deletedTransaction = await transaction.findOneAndDelete({ _id: id, userId: req.user._id});
     
         return res.status(200).json({
             "message": "Transaction delete successfully",
@@ -99,8 +99,35 @@ async function deleteExpense(req, res){
 }
 
 
+async function getAllTransactions(req, res){    
+    const allTransactions = await transaction.find({userId: req.user._id});
+    return res.status(200).json({
+        "message": "All transactions fetched",
+        "success": true,
+        "data": allTransactions,
+    });
+}
+
+async function getTransactionsById(req, res){
+    const {id} = req.params;
+
+    const transactionFetched = await transaction.findOne({
+        userId: req.user._id,
+        _id: id,
+    });
+
+    return res.status(200).json({
+        "message": "Transactions fetched",
+        "success": true,
+        "data": transactionFetched,
+    });
+}
+
+
 module.exports = {
     addExpense,
     editExpense,
     deleteExpense,
+    getAllTransactions,
+    getTransactionsById,
 };
