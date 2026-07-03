@@ -4,7 +4,6 @@ const {NotFoundError} = require('../services/errorHandlers');
 
 // Add expense
 const addExpense = asyncWrapper(async(req, res, next) => {
-    
     const {expenditureCategory, amount, category, date, note} = req.body;
 
     if(!expenditureCategory) return res.status(400).json({
@@ -67,36 +66,35 @@ const editExpense = asyncWrapper(async(req, res, next) => {
 })
 
 // Delete expense
-const deleteExpense = asyncWrapper(async(req, res, next)=> {try{
-        const {id} = req.params;
-        const deletedTransaction = await transaction.findOneAndDelete({ _id: id, userId: req.user._id});
-    
-        return res.status(200).json({
-            "message": "Transaction delete successfully",
-            "data": deletedTransaction,
-            "success": true,
-        });
-    }
-    catch(err){
-        return res.status(400).json({
-            "message": "Error whilst deleting the logged transaction",
-            "success": false,
-        })
-    }
+const deleteExpense = asyncWrapper(async(req, res, next)=> {
+    const {id} = req.params;
+    const deletedTransaction = await transaction.findOneAndDelete({ _id: id, userId: req.user._id});
+
+    return res.status(200).json({
+        "message": "Transaction delete successfully",
+        "data": deletedTransaction,
+        "success": true,
+    });
 })
 
+// Get all expenses (pagination implemented)
 const getAllTransactions = asyncWrapper(async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 2;
+    const limit = parseInt(req.query.limit) || 10;
     
     const skip = (page - 1) * limit;
 
+    const {category} = req.query;
+    const filter = {userId: req.user._id};
+    
+    if(category) filter.category = category;
+
     const [transactions, total] = await Promise.all([
-        transaction.find({ userId: req.user._id })
+        transaction.find(filter)
             .sort({ date: -1 }) // Sort descending so newest expenses appear on Page 1
             .skip(skip)
             .limit(limit),
-        transaction.countDocuments({ userId: req.user._id })
+        transaction.countDocuments(filter)
     ]);
 
     return res.status(200).json({
@@ -112,6 +110,7 @@ const getAllTransactions = asyncWrapper(async (req, res, next) => {
     });
 });
 
+// Get particular expense
 const getTransactionsById = asyncWrapper(async (req, res, next) => {
     const {id} = req.params;    
 
@@ -129,7 +128,25 @@ const getTransactionsById = asyncWrapper(async (req, res, next) => {
         "success": true,
         "data": transactionFetched  ,
     });
-})
+});
+
+// Get expenses of a particular category
+// const getAllTransactionsByCategory = asyncWrapper(async (req, res, next) => {
+//     const {category} = req.query;
+
+//     const query = {
+//         userId: req.user._id,
+//         category: category,
+//     }
+
+//     const categoricalTransactions = await transaction.find(query); 
+
+//     return res.status(200).json({
+//         "message": "Expenses fetched categorically",
+//         "success": true,
+//         "data": categoricalTransactions,
+//     })
+// });
 
 module.exports = {
     addExpense,
