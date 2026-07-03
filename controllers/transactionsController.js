@@ -85,14 +85,32 @@ const deleteExpense = asyncWrapper(async(req, res, next)=> {try{
     }
 })
 
-const getAllTransactions = asyncWrapper(async (req, res, next) => {    
-    const allTransactions = await transaction.find({userId: req.user._id});
+const getAllTransactions = asyncWrapper(async (req, res, next) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 2;
+    
+    const skip = (page - 1) * limit;
+
+    const [transactions, total] = await Promise.all([
+        transaction.find({ userId: req.user._id })
+            .sort({ date: -1 }) // Sort descending so newest expenses appear on Page 1
+            .skip(skip)
+            .limit(limit),
+        transaction.countDocuments({ userId: req.user._id })
+    ]);
+
     return res.status(200).json({
-        "message": "All transactions fetched",
-        "success": true,
-        "data": allTransactions,
+        message: "Transactions fetched",
+        success: true,
+        data: transactions,
+        meta: {
+            currentPage: page,
+            limit: limit,
+            totalItems: total,
+            totalPages: Math.ceil(total / limit) 
+        }
     });
-})
+});
 
 const getTransactionsById = asyncWrapper(async (req, res, next) => {
     const {id} = req.params;    
