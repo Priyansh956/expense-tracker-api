@@ -6,6 +6,10 @@ const transactionSchema = new mongoose.Schema({
         ref: 'user',
         required: true,
     },
+    title: {
+        type: String,
+        required: true,
+    },
     expenditureCategory:{
         type: String,
         required: true,

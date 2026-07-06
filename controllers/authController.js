@@ -85,7 +85,40 @@ async function userLogin(req, res){
     }
 }
 
+async function getMe(req, res) {
+    try {
+        const user = await User.findById(req.user._id).select('-password');
+        if (!user) {
+            return res.status(404).json({ message: "User not found", success: false });
+        }
+        return res.status(200).json({ message: "User fetched", success: true, data: user });
+    } catch (err) {
+        return res.status(500).json({ message: "Error fetching user", success: false });
+    }
+}
+
+async function updateCategories(req, res) {
+    try {
+        const { categories } = req.body;
+        if (!Array.isArray(categories)) {
+            return res.status(400).json({ message: "categories must be an array", success: false });
+        }
+
+        const updatedUser = await User.findByIdAndUpdate(
+            req.user._id,
+            { categories },
+            { new: true, runValidators: true }
+        ).select('-password');
+
+        return res.status(200).json({ message: "Categories updated", success: true, data: updatedUser });
+    } catch (err) {
+        return res.status(500).json({ message: "Error updating categories", success: false });
+    }
+}
+
 module.exports = {
     signUp,
     userLogin,
+    getMe,
+    updateCategories,
 };

@@ -36,6 +36,8 @@ class ForbiddenError extends AppError{
     }
 }
 
+
+
 module.exports = {
     AppError,
     NotFoundError,
